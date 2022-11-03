@@ -2,6 +2,7 @@ import type {HydratedDocument, Types} from 'mongoose';
 import type {Freet} from './model';
 import FreetModel from './model';
 import UserCollection from '../user/collection';
+import FreetReactModel from '../freetreact/model';
 
 /**
  * This files contains a class that has the functionality to explore freets
@@ -95,6 +96,46 @@ class FreetCollection {
    */
   static async deleteMany(authorId: Types.ObjectId | string): Promise<void> {
     await FreetModel.deleteMany({authorId});
+  }
+
+  /**
+   *  Add a freetreact to the freet
+   * @param {string} freetId - The ID of the freet being reacted to
+   * @param {number} value - The value of the react
+   * @param {string} reactorId - The ID of the user reacting
+   * @return {Promise<FreetReact>} - The same freet, now with a new react
+   */
+  static async addFreetReact(freetId: Types.ObjectId | string, value: number, reactorId: Types.ObjectId | string): Promise<FreetReact> {
+    const react = new FreetReactModel({
+      freetId,
+      reactorId,
+      value
+    });
+    await react.save();
+    console.log('react created');
+    return react;
+  }
+
+  /**
+   *  Remove a freetreact from the freet
+   * @param {string} reactId - The Id of the react to remove from the freet
+   * @return {Promise<boolean>} - true if the react has been deleted, false otherwise
+   */
+  static async removeFreetReact(reactId: Types.ObjectId | string): Promise<boolean> {
+    await FreetReactModel.deleteOne({_id: reactId});
+    return true;
+  }
+
+  /**
+   * Check if freet has already been reacted to by the user
+   *
+   * @param {string} freetId - The freetId of the freet to check
+   * @param {string} reactorId - The userId of the reactor to check
+   * @return {Promise<FreetReact| undefined>} - the reactId if the reactorId is in the freet's reacts, false otherwise
+   */
+  static async findFreetReactByFreetAndReactor(freetId: Types.ObjectId | string, reactorId: Types.ObjectId | string): Promise<FreetReact | undefined> {
+    const exists = await FreetReactModel.findOne({freetId, reactorId});
+    return exists;
   }
 }
 
