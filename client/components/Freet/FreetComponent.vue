@@ -52,6 +52,11 @@
       Posted at {{ freet.dateModified }}
       <i v-if="freet.edited">(edited)</i>
     </p>
+    <footer>
+      <ReactBar
+        :freetId="freet._id"
+      />
+    </footer>
     <section class="alerts">
       <article
         v-for="(status, alert, index) in alerts"
@@ -65,8 +70,10 @@
 </template>
 
 <script>
+import ReactBar from '@/components/FreetReact/ReactBar.vue';
 export default {
   name: 'FreetComponent',
+  components: {ReactBar},
   props: {
     // Data from the stored freet
     freet: {

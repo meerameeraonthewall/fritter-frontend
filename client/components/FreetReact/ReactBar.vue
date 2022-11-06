@@ -1,0 +1,152 @@
+<!-- Reusable component representing an interface for freetreacts -->
+
+<template>
+  <article
+    class="freetreact"
+  >
+    <div class="reactbar">
+      <button 
+        class="reactbutton"
+        title="Agree"
+        @click="addReact(1);"
+      >
+        👍🏽
+      </button>
+      <button 
+        class="reactbutton"
+        title="Disagree"
+        @click="addReact(2)"
+      >
+        👎🏽
+      </button>
+      <button
+        class="reactbutton"
+        title="Send Love"
+        @click="addReact(3)"
+      >
+        💞
+      </button>
+      <button
+        class="reactbutton"
+        title="Sad"
+        @click="addReact(4)"
+      >
+        😭
+      </button>
+      <button 
+        class="reactbutton"
+        title="Angry"
+        @click="addReact(5)"
+      >
+        😡
+      </button>
+      <button 
+        class="reactbutton"
+        title="Interesting!"
+        @click="addReact(6)"
+      >
+        💡
+      </button>
+      <button 
+        class="reactbutton"
+        title="View Reacts"
+        @click="viewReacts"
+      >
+        ...
+      </button>
+
+      <section class="alerts">
+        <article
+          v-for="(status, alert, index) in alerts"
+          :key="index"
+          :class="status"
+        >
+          <p>{{ alert }}</p>
+        </article>
+      </section>
+    </div>
+  </article>
+</template>
+  
+  <script>
+  export default {
+    name: 'ReactBar',
+    props: {
+      // freetId of the freet the reactbar is attached to
+      freetId: {
+        type: String,
+        required: true
+      }
+    },
+    data() {
+      return {
+        viewReact: false, // Displays whether the freet is presented with reacts
+        alerts: {} // Displays success/error messages encountered during freet modification
+      };
+    },
+    computed: {
+      console: () => console,
+      window: () => window
+    },
+    methods: {
+      addReact(value) {
+        /**
+         * Performs react logic with the button in question
+         */
+         const params = {
+          method: 'POST',
+          body: JSON.stringify({reactValue: value}),
+          callback: () => {
+            this.$store.commit('alert', {
+              message: 'Successfully added react!', status: 'success',
+            });
+          }
+        };
+        this.request(params);
+      },
+
+      async viewReacts(){
+        console.log('viewing');
+        
+      },
+
+      async request(params) {
+        /**
+         * Submits a request to the freetreact's endpoint
+         * @param params - Options for the request
+         * @param params.body - Body for the request, if it exists
+         * @param params.callback - Function to run if the the request succeeds
+         */
+        const options = {
+          method: params.method, headers: {'Content-Type': 'application/json'}
+        };
+        if (params.body) {
+          options.body = params.body;
+        }
+        console.log(options);
+        try {
+         const r = await fetch(`/api/freetreacts/${this.freetId}`, options);
+          if (!r.ok) {
+            console.log('uh oh');
+            const res = await r.json();
+            throw new Error(res.error);
+          }
+          console.log('ok! ', r.message);
+          this.$store.commit('refreshFreets');
+          params.callback();
+        } catch (e) {
+          this.$set(this.alerts, e, 'error');
+          setTimeout(() => this.$delete(this.alerts, e), 3000);
+        }
+      }
+    }
+  };
+  </script>
+  
+  <style scoped>
+  .freet {
+      border: 1px solid #111;
+      padding: 20px;
+      position: relative;
+  }
+  </style>
