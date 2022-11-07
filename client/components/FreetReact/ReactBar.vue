@@ -2,9 +2,10 @@
 
 <template>
   <article
-    class="freetreact"
+    class="reactbar"
   >
-    <div class="reactbar">
+    <div class="bar">
+      <p>{{ reacts }}</p>
       <button 
         class="reactbutton"
         title="Agree"
@@ -50,7 +51,7 @@
       <button 
         class="reactbutton"
         title="View Reacts"
-        @click="viewReacts"
+        @click="$emit('viewReacts')"
       >
         ...
       </button>
@@ -76,6 +77,10 @@
       freetId: {
         type: String,
         required: true
+      },
+      reacts: {
+        type: Array,
+        default: () => null
       }
     },
     data() {
@@ -104,12 +109,6 @@
         };
         this.request(params);
       },
-
-      async viewReacts(){
-        console.log('viewing');
-        
-      },
-
       async request(params) {
         /**
          * Submits a request to the freetreact's endpoint
@@ -131,7 +130,6 @@
             const res = await r.json();
             throw new Error(res.error);
           }
-          console.log('ok! ', r.message);
           this.$store.commit('refreshFreets');
           params.callback();
         } catch (e) {

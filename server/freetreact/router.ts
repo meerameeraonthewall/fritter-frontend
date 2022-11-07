@@ -79,8 +79,10 @@ router.get(
     freetValidator.isFreetExists
   ],
   async (req: Request, res: Response) => {
+    console.log('GET FREET REACTS');
     const {freetId} = req.params;
     const reacts = await FreetReactCollection.findByFreetId(freetId);
+    console.log(reacts);
     res.status(200).json(reacts);
   }
 );

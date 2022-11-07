@@ -20,7 +20,6 @@ router.get(
   '/session',
   [],
   async (req: Request, res: Response) => {
-    console.log('STARTING SESSION');
     const user = await UserCollection.findOneByUserId(req.session.userId);
     res.status(200).json({
       message: 'Your session info was found successfully.',

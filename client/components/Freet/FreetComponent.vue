@@ -55,7 +55,9 @@
     <footer>
       <ReactBar
         :freetId="freet._id"
+        @viewReacts="toggleViewReacts"
       />
+      <div id="reactsContainer" />
     </footer>
     <section class="alerts">
       <article
@@ -84,10 +86,15 @@ export default {
   data() {
     return {
       editing: false, // Whether or not this freet is in edit mode
+      reactView: false, // Whether or not to display reacts
       draft: this.freet.content, // Potentially-new content for this freet
       alerts: {} // Displays success/error messages encountered during freet modification
     };
   },
+  computed: {
+      console: () => console,
+      window: () => window
+    },
   methods: {
     startEditing() {
       /**
@@ -138,6 +145,43 @@ export default {
         }
       };
       this.request(params);
+    },
+    async toggleViewReacts() {
+      this.reactView = !this.reactView;
+      const container = document.getElementById("reactsContainer");
+
+      if (this.reactView) {
+        try {
+          const r = await fetch(`/api/freetreacts/${this.freet._id}`);
+          const res = await r.json();
+          if (!r.ok) {
+            throw new Error(res.error);
+          }
+          else {
+            const reactsMap = {1: '👍🏽', 2: '👎🏽', 3: '💞', 4: '😭', 5: '😡', 6: '💡'};
+            const formattedReacts = res.map(react => {
+              console.log(react);
+              return react.reactorId.username + ' reacted ' + reactsMap[react.value];
+            })
+            console.log(formattedReacts);
+            for (const react of formattedReacts ){
+              const tag = document.createElement("p");
+              const text = document.createTextNode(react);
+              tag.appendChild(text);
+              container.appendChild(tag);
+            }
+
+          }
+          this.$store.commit('refreshFreets');
+
+        } catch (e) {
+        this.$set(this.alerts, e, 'error');
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+        }
+      }
+      else {
+        container.innerHTML='';
+      }
     },
     async request(params) {
       /**
