@@ -53,6 +53,14 @@ class FreetReactCollection {
     const reacts = await FreetReactModel.find({freetId}).populate('reactorId', 'username');
     return reacts;
   }
+
+  /**
+   * Find all reacts
+   */
+  static async findAll(): Promise<FreetReact[]> {
+    const reacts = await FreetReactModel.find().populate('reactorId', 'username');
+    return reacts;
+  }
 }
 
 export default FreetReactCollection;

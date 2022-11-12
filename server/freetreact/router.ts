@@ -73,7 +73,7 @@ router.post(
  * @return {FreetReact[]} an array of citations
  * @throws {404} - If no freet has given freetId
  */
-router.get(
+/* router.get(
   '/:freetId?',
   [
     freetValidator.isFreetExists
@@ -83,6 +83,23 @@ router.get(
     const {freetId} = req.params;
     const reacts = await FreetReactCollection.findByFreetId(freetId);
     console.log(reacts);
+    res.status(200).json(reacts);
+  }
+); */
+
+/** Get all reacts for a freet
+ *
+ * @name GET /api/freetreacts/
+ *
+ * @return {FreetReact[]} an array of citations
+ * @throws {404} - If no freet has given freetId
+ */
+router.get(
+  '/',
+  [],
+  async (req: Request, res: Response) => {
+    console.log('GET ALL REACTS');
+    const reacts = await FreetReactCollection.findAll();
     res.status(200).json(reacts);
   }
 );

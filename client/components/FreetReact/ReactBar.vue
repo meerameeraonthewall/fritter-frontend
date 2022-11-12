@@ -5,12 +5,12 @@
     class="reactbar"
   >
     <div class="bar">
-      <p>{{ reacts }}</p>
       <button 
         class="reactbutton"
         title="Agree"
         @click="addReact(1);"
       >
+        {{ $store.state.reacts.filter(react => react.freetId === freetId && react.value === 1).length }}
         👍🏽
       </button>
       <button 
@@ -18,6 +18,7 @@
         title="Disagree"
         @click="addReact(2)"
       >
+        {{ $store.state.reacts.filter(react => react.freetId === freetId && react.value === 2).length }}
         👎🏽
       </button>
       <button
@@ -25,6 +26,7 @@
         title="Send Love"
         @click="addReact(3)"
       >
+        {{ $store.state.reacts.filter(react => react.freetId === freetId && react.value === 3).length }}
         💞
       </button>
       <button
@@ -32,6 +34,7 @@
         title="Sad"
         @click="addReact(4)"
       >
+        {{ $store.state.reacts.filter(react => react.freetId === freetId && react.value === 4).length }}
         😭
       </button>
       <button 
@@ -39,6 +42,7 @@
         title="Angry"
         @click="addReact(5)"
       >
+        {{ $store.state.reacts.filter(react => react.freetId === freetId && react.value === 5).length }}
         😡
       </button>
       <button 
@@ -46,16 +50,9 @@
         title="Interesting!"
         @click="addReact(6)"
       >
+        {{ $store.state.reacts.filter(react => react.freetId === freetId && react.value === 6).length }}
         💡
       </button>
-      <button 
-        class="reactbutton"
-        title="View Reacts"
-        @click="$emit('viewReacts')"
-      >
-        ...
-      </button>
-
       <section class="alerts">
         <article
           v-for="(status, alert, index) in alerts"
@@ -77,22 +74,19 @@
       freetId: {
         type: String,
         required: true
-      },
-      reacts: {
-        type: Array,
-        default: () => null
       }
     },
     data() {
       return {
-        viewReact: false, // Displays whether the freet is presented with reacts
-        alerts: {} // Displays success/error messages encountered during freet modification
+        alerts: {}, // Displays success/error messages encountered during freet modification
+        reacts: this.$store.state.reacts
       };
     },
     computed: {
       console: () => console,
       window: () => window
     },
+
     methods: {
       addReact(value) {
         /**
@@ -130,7 +124,7 @@
             const res = await r.json();
             throw new Error(res.error);
           }
-          this.$store.commit('refreshFreets');
+          this.$store.commit('refreshReacts');
           params.callback();
         } catch (e) {
           this.$set(this.alerts, e, 'error');

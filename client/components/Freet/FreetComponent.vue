@@ -31,11 +31,27 @@
         >
           ✏️ Edit
         </button>
+        <button
+          v-if="!editing"
+          @click="openCitationMenu"
+        >
+          📜 Add Citation
+        </button>
         <button @click="deleteFreet">
           🗑️ Delete
         </button>
       </div>
     </header>
+    <p
+      v-if="citeView"
+    >
+      <AddCitationForm 
+        button="Add Citation to this Freet!"
+        placeholder="Insert one valid URL"
+        value="url"
+        :freetId="this.freet._id"
+      />
+    </p>
     <textarea
       v-if="editing"
       class="content"
@@ -55,7 +71,6 @@
     <footer>
       <ReactBar
         :freetId="freet._id"
-        @viewReacts="toggleViewReacts"
       />
       <div id="reactsContainer" />
     </footer>
@@ -73,9 +88,10 @@
 
 <script>
 import ReactBar from '@/components/FreetReact/ReactBar.vue';
+import AddCitationForm from '@/components/Citation/AddCitationForm.vue'
 export default {
   name: 'FreetComponent',
-  components: {ReactBar},
+  components: {ReactBar, AddCitationForm},
   props: {
     // Data from the stored freet
     freet: {
@@ -86,7 +102,7 @@ export default {
   data() {
     return {
       editing: false, // Whether or not this freet is in edit mode
-      reactView: false, // Whether or not to display reacts
+      citeView: false, // Whether or not the user is viewing the citation menu
       draft: this.freet.content, // Potentially-new content for this freet
       alerts: {} // Displays success/error messages encountered during freet modification
     };
@@ -124,6 +140,9 @@ export default {
       };
       this.request(params);
     },
+    openCitationMenu() {
+      this.citeView = !this.citeView;
+    },
     submitEdit() {
       /**
        * Updates freet to have the submitted draft content.
@@ -145,43 +164,6 @@ export default {
         }
       };
       this.request(params);
-    },
-    async toggleViewReacts() {
-      this.reactView = !this.reactView;
-      const container = document.getElementById("reactsContainer");
-
-      if (this.reactView) {
-        try {
-          const r = await fetch(`/api/freetreacts/${this.freet._id}`);
-          const res = await r.json();
-          if (!r.ok) {
-            throw new Error(res.error);
-          }
-          else {
-            const reactsMap = {1: '👍🏽', 2: '👎🏽', 3: '💞', 4: '😭', 5: '😡', 6: '💡'};
-            const formattedReacts = res.map(react => {
-              console.log(react);
-              return react.reactorId.username + ' reacted ' + reactsMap[react.value];
-            })
-            console.log(formattedReacts);
-            for (const react of formattedReacts ){
-              const tag = document.createElement("p");
-              const text = document.createTextNode(react);
-              tag.appendChild(text);
-              container.appendChild(tag);
-            }
-
-          }
-          this.$store.commit('refreshFreets');
-
-        } catch (e) {
-        this.$set(this.alerts, e, 'error');
-        setTimeout(() => this.$delete(this.alerts, e), 3000);
-        }
-      }
-      else {
-        container.innerHTML='';
-      }
     },
     async request(params) {
       /**

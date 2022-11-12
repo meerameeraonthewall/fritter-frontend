@@ -11,6 +11,7 @@ const store = new Vuex.Store({
   state: {
     filter: null, // Username to filter shown freets by (null = show all)
     freets: [], // All freets created in the app
+    reacts: [], // All reacts created in the app
     username: null, // Username of the logged in user
     alerts: {} // global success/error messages encountered during submissions to non-visible forms
   },
@@ -52,7 +53,15 @@ const store = new Vuex.Store({
       const url = state.filter ? `/api/users/${state.filter}/freets` : '/api/freets';
       const res = await fetch(url).then(async r => r.json());
       state.freets = res;
-    }
+    },
+    async refreshReacts(state) {
+      /**
+       * Request the server for all the reacts.
+       */
+      const url = '/api/freetreacts';
+      const res = await fetch(url).then(async r => r.json());
+      state.reacts = res;
+    },
   },
   // Store data across page refreshes, only discard on browser close
   plugins: [createPersistedState()]
