@@ -33,7 +33,7 @@
         </button>
         <button
           v-if="!editing"
-          @click="openCitationMenu"
+          @click="toggleCitationMenu"
         >
           📜 Add Citation
         </button>
@@ -50,6 +50,7 @@
         placeholder="Insert one valid URL"
         value="url"
         :freetId="this.freet._id"
+        @cited="endCite"
       />
     </p>
     <textarea
@@ -64,6 +65,10 @@
     >
       {{ freet.content }}
     </p>
+    <CitationBar
+      :freetId="freet._id"
+      :owner="$store.state.username === freet.author"
+    />
     <p class="info">
       Posted at {{ freet.dateModified }}
       <i v-if="freet.edited">(edited)</i>
@@ -88,10 +93,11 @@
 
 <script>
 import ReactBar from '@/components/FreetReact/ReactBar.vue';
-import AddCitationForm from '@/components/Citation/AddCitationForm.vue'
+import AddCitationForm from '@/components/Citation/AddCitationForm.vue';
+import CitationBar from '@/components/Citation/CitationBar.vue';
 export default {
   name: 'FreetComponent',
-  components: {ReactBar, AddCitationForm},
+  components: {ReactBar, AddCitationForm, CitationBar},
   props: {
     // Data from the stored freet
     freet: {
@@ -140,8 +146,15 @@ export default {
       };
       this.request(params);
     },
-    openCitationMenu() {
+    toggleCitationMenu() {
       this.citeView = !this.citeView;
+    },
+    endCite() {
+      console.log('end cite');
+      this.citeView = false;
+      const message = "Succesfully created citation.";
+      this.$set(this.alerts, message, 'success');
+      setTimeout(() => this.$delete(this.alerts, message), 3000);
     },
     submitEdit() {
       /**

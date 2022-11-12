@@ -51,6 +51,14 @@ class CitationCollection {
     const citations = await CitationModel.find({freetId});
     return citations;
   }
+
+  /**
+   * Find all citations
+   */
+  static async findAll(): Promise<Citation[]> {
+    const citations = await CitationModel.find();
+    return citations;
+  }
 }
 
 export default CitationCollection;

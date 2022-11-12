@@ -13,9 +13,6 @@ export default {
         required: true
       }
     },
-  data() {
-    return {placeholder: 'Enter one valid URL'};
-  },
   methods: {
     async submit() {
       const route = `/api/cite/${this.freetId}`;
@@ -29,10 +26,9 @@ export default {
         if (!r.ok) {
           throw new Error(res.error);
         }
-        const message = 'Successfully created citation.';
-        this.$set(this.alerts, message, 'success');
-        setTimeout(() => this.$delete(this.alerts, message), 3000);
-
+        this.$emit('cited');
+        this.$store.commit('refreshCitations');
+        
       } catch (e) {
         this.$set(this.alerts, e, 'error');
         setTimeout(() => this.$delete(this.alerts, e), 3000);

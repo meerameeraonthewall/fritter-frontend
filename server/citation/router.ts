@@ -38,21 +38,18 @@ router.post(
   }
 );
 
-/** Get all citations for a freet
+/** Get all citations
  *
- * @name GET /api/cite/:id
+ * @name GET /api/cite/
  *
  * @return {Citation[]} an array of citations
  * @throws {404} - If no freet has given freetId
  */
 router.get(
-  '/:freetId?',
-  [
-    freetValidator.isFreetExists
-  ],
+  '/',
+  [],
   async (req: Request, res: Response) => {
-    const {freetId} = req.params;
-    const citations = await CitationCollection.findByFreetId(freetId);
+    const citations = await CitationCollection.findAll();
     res.status(200).json(citations);
   }
 );
