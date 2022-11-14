@@ -7,15 +7,20 @@
         <h2>Welcome @{{ $store.state.username }}</h2>
       </header>
       <CreateFreetForm />
-
-
       <div 
         id="sessionModal" 
         ref="modalDetails"
-        class="modal"
       >
         <SessionModal 
           @submit="submitModalData"
+        />
+      </div>
+      <div
+        id="lockoutModal"
+        ref="lockoutModal"
+      >
+        <LockoutModal 
+          @dismiss="dismissModal"
         />
       </div>
     </section>
@@ -74,16 +79,19 @@ import FreetComponent from '@/components/Freet/FreetComponent.vue';
 import CreateFreetForm from '@/components/Freet/CreateFreetForm.vue';
 import GetFreetsForm from '@/components/Freet/GetFreetsForm.vue';
 import SessionModal from '@/components/Freet/SessionModal.vue';
+import LockoutModal from '@/components/Freet/LockoutModal.vue';
 
 export default {
   name: 'FreetPage',
-  components: {FreetComponent, GetFreetsForm, CreateFreetForm, SessionModal},
+  components: {FreetComponent, GetFreetsForm, CreateFreetForm, SessionModal, LockoutModal},
   computed: {
         console: () => console,
         window: () => window
       },
   mounted() {
     this.$refs.getFreetsForm.submit();
+    this.$store.commit('refreshReacts');
+    this.$store.commit('refreshCitations');
     const localStorage = window.sessionStorage;
     // Get the modal
     const modal = document.getElementById("sessionModal");
@@ -104,18 +112,24 @@ export default {
         this.$store.state.time = expiry;
         this.$store.state.lockout = lockout;
         localStorage.setItem('expiry', true);
-        this.countdown();
+        if (this.$store.state.lockout !== "none") {
+          this.countdown();
+        }
       },
       // Following adapted from https://stackoverflow.com/questions/62964228/how-do-i-display-a-live-countdown-then-close-the-window
       async countdown() {
-        console.log('countdown');
         const endTime = this.$store.state.time;
         while (Date.now() < endTime) {
           await new Promise(resolve => setTimeout(resolve, 1000));
           console.log('countdown again');
         }
-        alert("Time's up!");
-        window.open('', '_self').close();
+        
+        const modal = this.$refs.lockoutModal;
+        modal.style.display = "block";
+      },
+      dismissModal() {
+        const modal = this.$refs.lockoutModal;
+        modal.style.display="none";
       }
   }
 };
@@ -142,7 +156,7 @@ section .scrollbox {
   padding: 3%;
   overflow-y: scroll;
 }
-.modal {
+#sessionModal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
@@ -153,5 +167,18 @@ section .scrollbox {
   overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+#lockoutModal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+
 }
 </style>

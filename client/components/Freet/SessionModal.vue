@@ -13,7 +13,7 @@
           id="time"
           type="number" 
           name="time" 
-          min="1" 
+          min="0" 
           max="120"
         >
 
