@@ -26,7 +26,6 @@ router.post(
     freetValidator.isFreetExists
   ],
   async (req: Request, res: Response) => {
-    console.log('ROUTER POST');
     const {freetId} = req.params;
     const userId = (req.session.userId as string) ?? '';
     // Find the reactId of any existing freetreact by this user
@@ -66,28 +65,7 @@ router.post(
   }
 );
 
-/** Get all reacts for a freet
- *
- * @name GET /api/freetreacts/:id
- *
- * @return {FreetReact[]} an array of citations
- * @throws {404} - If no freet has given freetId
- */
-/* router.get(
-  '/:freetId?',
-  [
-    freetValidator.isFreetExists
-  ],
-  async (req: Request, res: Response) => {
-    console.log('GET FREET REACTS');
-    const {freetId} = req.params;
-    const reacts = await FreetReactCollection.findByFreetId(freetId);
-    console.log(reacts);
-    res.status(200).json(reacts);
-  }
-); */
-
-/** Get all reacts for a freet
+/** Get all reacts
  *
  * @name GET /api/freetreacts/
  *

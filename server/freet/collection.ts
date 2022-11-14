@@ -113,7 +113,6 @@ class FreetCollection {
       value
     });
     await react.save();
-    console.log('react created');
     return react;
   }
 

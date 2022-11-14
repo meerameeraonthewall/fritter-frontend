@@ -25,13 +25,9 @@ const isCitationExists = async (req: Request, res: Response, next: NextFunction)
  */
 const isValidUrl = (req: Request, res: Response, next: NextFunction) => {
   const {url} = req.body as {url: string};
-  console.log('checking URL');
   // Syntax from https://www.regextester.com/93652
   const exp = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
   const urlPattern = new RegExp(exp);
-  console.log(req.body);
-  console.log(url);
-  console.log(urlPattern.test(url));
 
   if (!urlPattern.test(url)) {
     res.status(400).json({

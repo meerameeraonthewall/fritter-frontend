@@ -14,6 +14,8 @@ const store = new Vuex.Store({
     reacts: [], // All reacts created in the app
     citations: [], // All citations created in the app
     username: null, // Username of the logged in user
+    time: null,
+    lockout: null,
     alerts: {} // global success/error messages encountered during submissions to non-visible forms
   },
   mutations: {

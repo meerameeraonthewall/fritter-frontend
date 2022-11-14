@@ -8,7 +8,7 @@
       <button 
         class="reactbutton"
         title="Agree"
-        @click="addReact(1);"
+        @click="addReact(1)"
       >
         {{ $store.state.reacts.filter(react => react.freetId === freetId && react.value === 1).length }}
         👍🏽
@@ -116,11 +116,9 @@
         if (params.body) {
           options.body = params.body;
         }
-        console.log(options);
         try {
          const r = await fetch(`/api/freetreacts/${this.freetId}`, options);
           if (!r.ok) {
-            console.log('uh oh');
             const res = await r.json();
             throw new Error(res.error);
           }

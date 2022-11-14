@@ -13,7 +13,7 @@
       </div>
       <div
         v-else
-        id="citationHeader"
+        ref="citationHeader"
         class="existCitations"
         @click="toggleCitations"
       >
@@ -76,13 +76,11 @@
   
       methods: {
         openTab(url) {
-            console.log("opening at ", url);
             window.open(url, '_blank');
         },
         toggleCitations() {
             this.citeView = !this.citeView;
-            const header = document.getElementById('citationHeader');
-            console.log('header is ', header.innerHTML);
+            const header = this.$refs.citationHeader;
             if (this.citeView) {
                 header.innerHTML = 'Collapse Citations';
             }
@@ -91,6 +89,7 @@
             }
 
         },
+        
 
         async removeCitation(citationId) {
           const params = {
@@ -106,7 +105,6 @@
           try {
            const r = await fetch(`/api/cite/${citationId}`, params);
             if (!r.ok) {
-              console.log('uh oh');
               const res = await r.json();
               throw new Error(res.error);
             }

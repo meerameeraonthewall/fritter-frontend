@@ -150,7 +150,6 @@ export default {
       this.citeView = !this.citeView;
     },
     endCite() {
-      console.log('end cite');
       this.citeView = false;
       const message = "Succesfully created citation.";
       this.$set(this.alerts, message, 'success');
